@@ -25,7 +25,6 @@ class Card:
     def __init__(self, rank, suit):
         self.rank = rank
         self.suit = suit
-        # Set card value for calculation
         if self.rank in ['J', 'Q', 'K']:
             self.value = 10
         elif self.rank == 'A':
@@ -42,7 +41,9 @@ def deck_create():
 def calculate_hand_value(hand):
     value = sum(card.value for card in hand)
     number_of_aces = sum(1 for card in hand if card.rank == 'A')
-    #still dk how to do the aces thing but the rest is functional
+    if value > 21 & number_of_aces > 0:
+        value = value - 10
+        number_of_aces = number_of_aces - 1
     return value
 
 def main():
@@ -50,7 +51,6 @@ def main():
     clock = pygame.time.Clock()
 
     deck = deck_create()
-
     player_hand = []
     dealer_hand = []
 
