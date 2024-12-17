@@ -32,7 +32,6 @@ class Card:
         else:
             self.value = int(self.rank)
 
-
 def deck_create():
     deck = [Card(rank, suit) for rank in RANKS for suit in SUITS]
     random.shuffle(deck)
@@ -41,15 +40,12 @@ def deck_create():
 def calculate_hand_value(hand):
     value = sum(card.value for card in hand)
     number_of_aces = sum(1 for card in hand if card.rank == 'A')
-    if value > 21 & number_of_aces > 0:
-        value = value - 10
-        number_of_aces = number_of_aces - 1
+    while value > 21 and number_of_aces > 0:
+        value -= 10
+        number_of_aces -= 1
     return value
 
-def main():
-    running = True
-    clock = pygame.time.Clock()
-
+def game_loop():
     deck = deck_create()
     player_hand = []
     dealer_hand = []
@@ -64,6 +60,9 @@ def main():
     dealer_hand.append(deck.pop())
     dealer_hand.append(deck.pop())
 
+    running = True
+    clock = pygame.time.Clock()
+
     while running:
         screen.fill(GREEN)
 
@@ -73,7 +72,7 @@ def main():
 
             if player_turn and not game_over:
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_h: 
+                    if event.key == pygame.K_h:
                         player_hand.append(deck.pop())
                         if calculate_hand_value(player_hand) > 21:
                             player_busted = True
@@ -81,7 +80,6 @@ def main():
                     elif event.key == pygame.K_s:
                         player_turn = False
 
-      
         if not player_turn and not game_over:
             while calculate_hand_value(dealer_hand) <= 17:
                 dealer_hand.append(deck.pop())
@@ -89,7 +87,6 @@ def main():
                 dealer_busted = True
             game_over = True
 
-      
         display_hand(player_hand, 50, 100)
         display_hand(dealer_hand, 500, 100)
 
@@ -107,16 +104,23 @@ def main():
                     display_text("Dealer Wins!", 50, 400)
                 else:
                     display_text("It's a Tie!", 50, 400)
-            display_text("Press ESC to exit.", 50, 450)
+
+            display_text("Press R to play again or ESC to exit.", 50, 450)
 
             keys = pygame.key.get_pressed()
             if keys[pygame.K_ESCAPE]:
                 running = False
+            if keys[pygame.K_r]:
+                game_loop()
 
-        pygame.display.flip() 
-        clock.tick(60) 
+        pygame.display.flip()
+        clock.tick(120)
 
     pygame.quit()
     sys.exit()
+
+def main():
+    while True:
+        game_loop()
 
 main()
